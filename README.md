@@ -9,21 +9,23 @@ Consider the following JSON-Schema (escaped as YAML, for better viewing):
 ```yaml
 # person.yml
 person:
-  name:
-    type: string
-  birth:
-    type: object
-    properties:
-      name:
-        type: string
-  children:
-    type: array
-    required: true
-    items:
+  type: object
+  properties:
+    name:
+      type: string
+    birth:
       type: object
       properties:
         name:
           type: string
+    children:
+      type: array
+      required: true
+      items:
+        type: object
+        properties:
+          name:
+            type: string
 ```
 
 Usage:
