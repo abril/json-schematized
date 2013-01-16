@@ -26,13 +26,15 @@ describe SamplePerson do
         subject.phones.should be_kind_of(Array)
         subject.__json__["phones"].should == []
       end
-      it "should aways assign required hashes" do
+    end
+    context "required attributes" do
+      it "should always assign required hashes" do
         subject.__json__.should be_has_key("birth")
         subject.__json__["birth"].should be_kind_of(Hash)
         subject.__json__["birth"].should be_has_key("location")
         subject.__json__["birth"]["location"].should be_kind_of(Hash)
       end
-      it "should aways assign required arrays" do
+      it "should always assign required arrays" do
         subject.__json__.should be_has_key("children")
         subject.__json__["children"].should be_kind_of(Array)
         subject.__json__["birth"].should be_has_key("tags")
