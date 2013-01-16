@@ -7,6 +7,10 @@ module JSON
 
       attr_reader :__json__
 
+      def to_json
+        MultiJson.dump __json__
+      end
+
       def initialize(attrs = nil)
         @__json__ = {}
         @__schema__ = Builder.new(self.class.json_schema)

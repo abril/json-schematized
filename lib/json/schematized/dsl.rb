@@ -15,6 +15,7 @@ module JSON
           raise ArgumentError, "JSON or block expected" if block_given? ^ json.nil?
           block = Proc.new{ json } unless block_given?
           @json_schema = {:loader => block}
+          self
         end
       end
     end
