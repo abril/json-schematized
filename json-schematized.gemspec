@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.homepage      = "http://github.com/abril"
 
   s.add_dependency "multi_json", "~> 1.0"
+  s.add_dependency "virtus"
 
   s.add_development_dependency "json", "~> 1.4"
   s.add_development_dependency "rspec", ">= 2.6"

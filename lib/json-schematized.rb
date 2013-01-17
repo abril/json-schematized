@@ -8,6 +8,7 @@ module JSON
     autoload :Base, "json/schematized/base"
     autoload :Builder, "json/schematized/builder"
     autoload :DSL, "json/schematized/dsl"
+    autoload :Virtus, "json/schematized/virtus"
   end
 end
 
