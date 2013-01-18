@@ -1,7 +1,7 @@
 # encoding: UTF-8
 
-require "virtus"
 require "active_support"
+require "virtus"
 
 module JSON
   module Schematized
