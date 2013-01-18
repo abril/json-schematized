@@ -23,13 +23,14 @@ describe ::JSON::Schematized::Virtus do
 
     it "should have attributes to be defined" do
       model_class.should be_include ::Virtus
-      model_class.attribute_set.map(&:name).should == [:email, :phones, :address]
+      model_class.attribute_set.map(&:name).sort.should == [:address, :email, :phones]
     end
 
     it "should define constants inside namespace" do
       model_class.should be_const_defined :Address
       model_class.const_get(:Address).should be VPerson::Address
       VPerson::Address.should be_include ::Virtus
+      VPerson::Address.attribute_set.map(&:name).sort.should == [:number, :street_name]
       VPerson.new.tap do |person|
         person.address.should be_kind_of VPerson::Address
         person.phones.should be_kind_of VPerson::PhonesCollection
