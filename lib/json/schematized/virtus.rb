@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require "virtus"
+require "active_support"
 
 module JSON
   module Schematized
@@ -9,6 +10,7 @@ module JSON
         Virtus.modularize(json_schema)
       end
     end
+
     module Virtus
       def self.modularize(json_schema)
         json_schema = MultiJson.dump(json_schema) unless json_schema.is_a?(String)
@@ -57,13 +59,14 @@ module JSON
         field_name.to_s.gsub(/(?:\A_*|_)([^_])/){ $1.upcase }
       end
 
-      def self.meta_type(ref, field_name, meta)
+      def self.meta_type(ref, field_name, meta, singularize = false)
         case meta[:type]
         when "string"
           String
         when "array"
           build_collection(ref, field_name, meta[:items])
         when "object"
+          field_name = ::ActiveSupport::Inflector.singularize(field_name.to_s).to_sym if singularize
           build_model(ref, field_name, meta)
         else
           Object
@@ -72,7 +75,7 @@ module JSON
 
       def self.build_collection(ref, field_name, meta)
         class_name = [build_class_name(field_name), "Collection"].join.to_sym
-        meta_type = meta_type(ref, field_name, meta)
+        meta_type = meta_type(ref, field_name, meta, true)
         if ref.const_defined?(class_name)
           ref.const_get(class_name)[meta_type]
         else

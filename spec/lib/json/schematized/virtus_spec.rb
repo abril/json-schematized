@@ -23,7 +23,7 @@ describe ::JSON::Schematized::Virtus do
 
     it "should have attributes to be defined" do
       model_class.should be_include ::Virtus
-      model_class.attribute_set.map(&:name).sort.should == [:address, :email, :phones]
+      model_class.attribute_set.map(&:name).sort.should == [:address, :children, :email, :phones]
     end
 
     it "should define constants inside namespace" do
@@ -31,9 +31,16 @@ describe ::JSON::Schematized::Virtus do
       model_class.const_get(:Address).should be VPerson::Address
       VPerson::Address.should be_include ::Virtus
       VPerson::Address.attribute_set.map(&:name).sort.should == [:number, :street_name]
+      model_class.should be_const_defined :Child
+      model_class.const_get(:Child).should be VPerson::Child
+      VPerson::Child.attribute_set.map(&:name).sort.should == [:age, :name]
+    end
+
+    it "should use defined meta_type of attributes" do
       VPerson.new.tap do |person|
         person.address.should be_kind_of VPerson::Address
         person.phones.should be_kind_of VPerson::PhonesCollection
+        person.children.should be_kind_of VPerson::ChildrenCollection
       end
     end
   end

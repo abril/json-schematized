@@ -16,3 +16,13 @@ person:
           type: string
         number:
           type: number
+    children:
+      type: array
+      required: true
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          age:
+            type: number
