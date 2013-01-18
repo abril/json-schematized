@@ -1,0 +1,18 @@
+person:
+  type: object
+  properties:
+    email:
+      type: string
+    phones:
+      type: array
+      required: true
+      items:
+        type: string
+    address:
+      type: object
+      required: true
+      properties:
+        street_name:
+          type: string
+        number:
+          type: number

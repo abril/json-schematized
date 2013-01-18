@@ -9,6 +9,10 @@ module JSON
     autoload :Builder, "json/schematized/builder"
     autoload :DSL, "json/schematized/dsl"
     autoload :Virtus, "json/schematized/virtus"
+
+    def self.included(base)
+      base.extend DSL
+    end
   end
 end
 
