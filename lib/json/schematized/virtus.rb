@@ -36,22 +36,23 @@ module JSON
         end
       end
 
-      def self.prepare_attributes!(ref, json_schema, build_subtypes = false)
+      def self.prepare_attributes!(ref, json_schema, included = false)
         json_schema[:properties].each_pair do |field_name, meta|
           case meta[:type]
           when "array"
-            next unless build_subtypes
+            next unless included
             opts = {}
             collection = build_collection(ref, field_name, meta)
             opts[:default] = collection.class.new if meta[:required]
             ref.attribute field_name, collection, opts
           when "object"
-            next unless build_subtypes
+            next unless included
             opts = {}
             model = build_model(ref, field_name, meta)
             opts[:default] = model.new if meta[:required]
             ref.attribute field_name, model, opts
           else
+            next if included
             ref.attribute field_name, meta_type(ref, field_name, meta)
           end
         end
