@@ -54,8 +54,8 @@ module JSON
           ref.const_get(class_name) :
           ref.const_set(class_name, Class.new(collection_superclass))
         ).tap do |klass|
-          unless klass.include?(self::Collections)
-            klass.send(:include, Collections)
+          unless klass.include?(Schematized::Collections)
+            klass.send(:include, Schematized::Collections)
             klass.send(:include, self::Collections)
           end
         end
