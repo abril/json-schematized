@@ -52,12 +52,15 @@ module JSON
         end
       end
 
+      def model_superclass
+      end
+
       def build_model(ref, field_name, json_schema)
         class_name = build_class_name(field_name).to_sym
         _module = modularize(json_schema)
         (ref.const_defined?(class_name) ?
           ref.const_get(class_name) :
-          ref.const_set(class_name, Class.new)
+          ref.const_set(class_name, Class.new(*[model_superclass].compact))
         ).tap do |klass|
           klass.send(:include, _module) unless klass.include?(_module)
         end
