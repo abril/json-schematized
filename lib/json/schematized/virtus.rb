@@ -20,11 +20,14 @@ module JSON
           ::JSON::Schematized::Virtus.const_get(module_name)
         else
           ::JSON::Schematized::Virtus.const_set(module_name, Module.new).module_eval do
+            include ::Virtus
+
             @json_schema = json_schema
             def self.json_schema; @json_schema; end
 
             Virtus.prepare_attributes!(self, json_schema)
             def self.included(base)
+              super
               Virtus.prepare_attributes!(base, json_schema, true)
             end
 
@@ -34,7 +37,6 @@ module JSON
       end
 
       def self.prepare_attributes!(ref, json_schema, build_subtypes = false)
-        ref.send(:include, ::Virtus)
         json_schema[:properties].each_pair do |field_name, meta|
           case meta[:type]
           when "array"
