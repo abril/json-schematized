@@ -43,5 +43,10 @@ describe ::JSON::Schematized::VirtusWrapper do
         person.children.should be_kind_of VPerson::ChildrenCollection
       end
     end
+
+    it "should have collections to include Collections module" do
+      VPerson::PhonesCollection.should be_include(described_class::Collections)
+      VPerson::PhonesCollection.should be_include(JSON::Schematized::Collections)
+    end
   end
 end

@@ -15,6 +15,8 @@ module JSON
     def self.included(base)
       base.extend DSL
     end
+
+    module Collections; end
   end
 end
 

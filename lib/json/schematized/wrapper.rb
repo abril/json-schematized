@@ -3,6 +3,10 @@
 module JSON
   module Schematized
     module Wrapper
+      def self.extended(base)
+        base.const_set(:Collections, Module.new)
+      end
+
       def modularize(json_schema, &block)
         json_schema = MultiJson.dump(json_schema) unless json_schema.is_a?(String)
         json_schema = MultiJson.load(json_schema, :symbolize_keys => true)
@@ -46,10 +50,14 @@ module JSON
 
       def build_collection(ref, field_name, meta)
         class_name = [build_class_name(field_name), "Collection"].join.to_sym
-        if ref.const_defined?(class_name)
-          ref.const_get(class_name)
-        else
+        (ref.const_defined?(class_name) ?
+          ref.const_get(class_name) :
           ref.const_set(class_name, Class.new(collection_superclass))
+        ).tap do |klass|
+          unless klass.include?(self::Collections)
+            klass.send(:include, Collections)
+            klass.send(:include, self::Collections)
+          end
         end
       end
 
