@@ -43,13 +43,13 @@ module JSON
             next unless included
             opts = {}
             collection = build_collection(ref, field_name, meta)
-            opts[:default] = collection.class.new if meta[:required]
+            opts[:default] = proc { collection.class.new } if meta[:required]
             ref.attribute field_name, collection, opts
           when "object"
             next unless included
             opts = {}
             model = build_model(ref, field_name, meta)
-            opts[:default] = model.new if meta[:required]
+            opts[:default] = proc { model.new } if meta[:required]
             ref.attribute field_name, model, opts
           else
             next if included
