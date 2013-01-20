@@ -24,6 +24,10 @@ module JSON
         end
       end
 
+      def self.build_collection(ref, field_name, meta)
+        super[meta_type(ref, field_name, meta, true)]
+      end
+
       def self.prepare_attributes!(ref, json_schema, included = false)
         json_schema[:properties].each_pair do |field_name, meta|
           case meta[:type]
