@@ -72,8 +72,12 @@ module JSON
           field_name = ::ActiveSupport::Inflector.singularize(field_name.to_s).to_sym if singularize
           build_model(ref, field_name, meta)
         else
-          Object
+          parse_json_schema_type meta[:type]
         end
+      end
+
+      def self.parse_json_schema_type(type)
+        Object
       end
 
       def self.build_collection(ref, field_name, meta)
