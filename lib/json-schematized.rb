@@ -9,6 +9,7 @@ module JSON
     autoload :Base, "json/schematized/base"
     autoload :Builder, "json/schematized/builder"
     autoload :DSL, "json/schematized/dsl"
+    autoload :Wrapper, "json/schematized/wrapper"
     autoload :VirtusWrapper, "json/schematized/virtus_wrapper"
 
     def self.included(base)
