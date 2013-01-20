@@ -40,13 +40,17 @@ module JSON
         field_name.to_s.gsub(/(?:\A_*|_)([^_])/){ $1.upcase }
       end
 
+      def collection_superclass
+        Array
+      end
+
       def build_collection(ref, field_name, meta)
         class_name = [build_class_name(field_name), "Collection"].join.to_sym
         meta_type = meta_type(ref, field_name, meta, true)
         if ref.const_defined?(class_name)
           ref.const_get(class_name)[meta_type]
         else
-          ref.const_set(class_name, Class.new(Array)).class_eval do
+          ref.const_set(class_name, Class.new(collection_superclass)).class_eval do
             self
           end[meta_type]
         end
