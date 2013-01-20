@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe ::JSON::Schematized::Virtus do
+describe ::JSON::Schematized::VirtusWrapper do
   let(:schema_fixture_file){ File.expand_path("../../../../fixtures/person.yml", __FILE__) }
   let(:schema_str){ MultiJson.dump(YAML.load(File.read(schema_fixture_file))["person"]) }
   let(:schema){ MultiJson.load(schema_str, :symbolize_keys => true) }
@@ -8,7 +8,7 @@ describe ::JSON::Schematized::Virtus do
 
   it "should create a Virtus module" do
     virtus_module.should be_kind_of Module
-    virtus_module.name.should =~ /\AJSON::Schematized::Virtus::JSD/
+    virtus_module.name.should =~ /\AJSON::Schematized::VirtusWrapper::JSD/
     virtus_module.json_schema.should == schema
     virtus_module.should be_include ::Virtus
   end

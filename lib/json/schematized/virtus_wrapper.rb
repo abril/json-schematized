@@ -1,34 +1,33 @@
 # encoding: UTF-8
 
-require "active_support"
 require "virtus"
 
 module JSON
   module Schematized
     module DSL
       def virtus_module
-        Virtus.modularize(json_schema)
+        VirtusWrapper.modularize(json_schema)
       end
     end
 
-    module Virtus
+    module VirtusWrapper
       def self.modularize(json_schema)
         json_schema = MultiJson.dump(json_schema) unless json_schema.is_a?(String)
         json_schema = MultiJson.load(json_schema, :symbolize_keys => true)
         module_name = "JSD#{json_schema.hash}".gsub(/\-/, "_").to_sym # JSON-Schema Definition
-        if ::JSON::Schematized::Virtus.const_defined?(module_name)
-          ::JSON::Schematized::Virtus.const_get(module_name)
+        if VirtusWrapper.const_defined?(module_name)
+          VirtusWrapper.const_get(module_name)
         else
-          ::JSON::Schematized::Virtus.const_set(module_name, Module.new).module_eval do
+          VirtusWrapper.const_set(module_name, Module.new).module_eval do
             include ::Virtus
 
             @json_schema = json_schema
             def self.json_schema; @json_schema; end
 
-            Virtus.prepare_attributes!(self, json_schema)
+            VirtusWrapper.prepare_attributes!(self, json_schema)
             def self.included(base)
               super
-              Virtus.prepare_attributes!(base, json_schema, true)
+              VirtusWrapper.prepare_attributes!(base, json_schema, true)
             end
 
             self
@@ -94,7 +93,7 @@ module JSON
 
       def self.build_model(ref, field_name, json_schema)
         class_name = build_class_name(field_name).to_sym
-        _module = Virtus.modularize(json_schema)
+        _module = VirtusWrapper.modularize(json_schema)
         (ref.const_defined?(class_name) ?
           ref.const_get(class_name) :
           ref.const_set(class_name, Class.new)
