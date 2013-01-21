@@ -21,6 +21,20 @@ module JSON
             super
             VirtusWrapper.prepare_schema!(base, json_schema, :complex_types)
           end
+
+          def self.extend_object(base)
+            class_name = :ComplexTypes
+            (const_defined?(class_name) ?
+              const_get(class_name) :
+              const_set(class_name, Module.new)
+            ).tap do |klass|
+              unless klass.include?(::Virtus)
+                klass.send(:include, ::Virtus)
+                VirtusWrapper.prepare_schema!(klass, json_schema, :complex_types)
+              end
+              base.extend klass
+            end
+          end
         end
       end
 

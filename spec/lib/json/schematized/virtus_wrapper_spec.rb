@@ -54,4 +54,20 @@ describe ::JSON::Schematized::VirtusWrapper do
       model_class::PhonesCollection.should be_include(JSON::Schematized::Collections)
     end
   end
+
+  context "object" do
+    let(:model) { Object.new.extend(virtus_module) }
+
+    it "should have attributes to be defined" do
+      model.should be_kind_of ::Virtus
+      virtus_module.should be_const_defined :ComplexTypes
+      model.should be_kind_of virtus_module::ComplexTypes
+
+      model.should be_respond_to :email
+
+      model.should be_respond_to :address
+      virtus_module::ComplexTypes.should be_const_defined :Address
+      model.address.should be_kind_of virtus_module::ComplexTypes::Address
+    end
+  end
 end
