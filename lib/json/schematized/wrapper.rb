@@ -90,7 +90,7 @@ module JSON
             klass.send(:include, Schematized::Collections)
             klass.send(:include, self::Collections)
           end
-        end
+        end[meta_type(ref, field_name, meta, true)]
       end
 
       def model_superclass
