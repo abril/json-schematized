@@ -23,6 +23,37 @@ module JSON
         end
       end
 
+      def prepare_schema!(ref, json_schema, mode)
+        modes = {
+          :complex_types => 1,
+          :simple_types => 2,
+          :any_types => 3
+        }
+        mode = [modes[mode].to_i, 0].max
+        accept_complex_types = (modes[:complex_types] & mode) > 0
+        accept_simple_types = (modes[:simple_types] & mode) > 0
+        json_schema[:properties].each_pair do |field_name, meta|
+          kind = nil
+          case meta[:type]
+          when "array"
+            next unless accept_complex_types
+            collection = build_collection(ref, field_name, meta[:items])
+            kind = collection
+          when "object"
+            next unless accept_complex_types
+            model = build_model(ref, field_name, meta)
+            kind = model
+          else
+            next unless accept_simple_types
+            kind = meta_type(ref, field_name, meta)
+          end
+          add_attribute! ref, field_name, meta, kind
+        end
+      end
+
+      def add_attribute!(ref, field_name, meta, kind)
+      end
+
       def meta_type(ref, field_name, meta, singularize = false)
         case meta[:type]
         when "string"
