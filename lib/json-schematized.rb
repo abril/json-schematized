@@ -16,6 +16,7 @@ module JSON
       base.extend DSL
     end
 
+    module Models; end
     module Collections; end
   end
 end

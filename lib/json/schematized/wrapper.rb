@@ -4,6 +4,7 @@ module JSON
   module Schematized
     module Wrapper
       def self.extended(base)
+        base.const_set(:Models, Module.new)
         base.const_set(:Collections, Module.new)
       end
 
@@ -66,12 +67,15 @@ module JSON
 
       def build_model(ref, field_name, json_schema)
         class_name = build_class_name(field_name).to_sym
-        _module = modularize(json_schema)
         (ref.const_defined?(class_name) ?
           ref.const_get(class_name) :
           ref.const_set(class_name, Class.new(*[model_superclass].compact))
         ).tap do |klass|
-          klass.send(:include, _module) unless klass.include?(_module)
+          unless klass.include?(Schematized::Models)
+            klass.send(:include, Schematized::Models)
+            klass.send(:include, self::Models)
+            klass.send(:include, modularize(json_schema))
+          end
         end
       end
     end
