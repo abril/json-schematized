@@ -7,7 +7,6 @@ class VPerson
   end
 end
 
-
 describe ::JSON::Schematized::VirtusWrapper do
   let(:schema_fixture_file){ File.expand_path("../../../../fixtures/person.yml", __FILE__) }
   let(:schema_str){ MultiJson.dump(YAML.load(File.read(schema_fixture_file))["person"]) }
@@ -49,7 +48,9 @@ describe ::JSON::Schematized::VirtusWrapper do
     subject { ::VPerson.new }
     its(:address){ should be_kind_of ::VPerson::Address }
     its(:phones){ should be_kind_of ::VPerson::PhonesCollection }
-    its(:children){ should be_kind_of ::VPerson::ChildrenCollection }
+    its(:children){ should_not be_instance_of Array }
+    its(:children){ should be_instance_of ::VPerson::ChildrenCollection }
+    its(:children){ should be_kind_of described_class::Array }
 
     context "with mass assignment" do
       let(:phones){ ["555-1234"] }
@@ -64,11 +65,11 @@ describe ::JSON::Schematized::VirtusWrapper do
       subject { ::VPerson.new attrs }
       its(:email){ should == "me@email.com" }
       its(:phones){ should == phones }
-      its(:address){ should be_kind_of ::VPerson::Address }
+      its(:address){ should be_instance_of ::VPerson::Address }
       its(:"address.street_name"){ should == address[:street_name] }
       its(:"address.number"){ should == address[:number] }
       its(:"children.size"){ should be 1 }
-      its(:"children.first"){ should be_kind_of ::VPerson::Child }
+      its(:"children.first"){ should be_instance_of ::VPerson::Child }
       its(:"children.first.name"){ should == child[:name] }
       its(:"children.first.age"){ should == child[:age] }
     end

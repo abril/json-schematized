@@ -40,11 +40,25 @@ module JSON
 
       def self.add_attribute!(ref, field_name, meta, kind)
         opts = {}
-        if meta[:required]
-          klass = kind.is_a?(Class) ? kind : kind.class
-          opts[:default] = proc { klass.new }
-        end
+        klass =  (kind.is_a?(Class) ? kind : (opts[:primitive] = kind.class))
+        opts[:default] = proc { klass.new } if meta[:required]
         ref.attribute field_name, kind, opts
+      end
+
+      def self.collection_superclass
+        Array
+      end
+
+      class Array < ::Array
+      end
+
+      module Attribute
+        class Array < ::Virtus::Attribute::Array
+          primitive VirtusWrapper::Array
+          def new_collection
+            (options[:primitive] || self.class.primitive).new
+          end
+        end
       end
     end
   end
