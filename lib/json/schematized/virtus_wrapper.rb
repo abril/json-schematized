@@ -40,8 +40,12 @@ module JSON
 
       def self.add_attribute!(ref, field_name, meta, kind)
         opts = {}
-        klass =  (kind.is_a?(Class) ? kind : (opts[:primitive] = kind.class))
-        opts[:default] = proc { klass.new } if meta[:required]
+        klass =  (kind.is_a?(Class) ? kind : kind.class)
+        if kind.is_a?(Class)
+          opts[:default] = klass.new if meta[:required] && kind.include?(::Virtus)
+        else
+          opts[:default] = kind.class.new
+        end
         ref.attribute field_name, kind, opts
       end
 
@@ -55,8 +59,16 @@ module JSON
       module Attribute
         class Array < ::Virtus::Attribute::Array
           primitive VirtusWrapper::Array
+          default primitive.new
+
           def new_collection
-            (options[:primitive] || self.class.primitive).new
+            (@primitive || self.class.primitive).new
+          end
+
+          def self.merge_options(type, options)
+            merged_options = super
+            klass = type.is_a?(Class) ? type : type.class
+            merged_options.merge(:primitive => klass)
           end
         end
       end
