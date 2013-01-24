@@ -10,29 +10,29 @@ end
 describe ::JSON::Schematized::VirtusWrapper do
   let(:schema_fixture_file){ File.expand_path("../../../../fixtures/person.yml", __FILE__) }
   let(:schema_str){ MultiJson.dump(YAML.load(File.read(schema_fixture_file))["person"]) }
+
   let(:schema){ MultiJson.load(schema_str, :symbolize_keys => true) }
-  let(:virtus_module){ described_class.modularize(schema) }
+  let(:modularized_schema){ described_class.modularize(schema) }
+  let(:model_class){ ::VPerson }
 
   context "wrapper module" do
     subject { described_class.modularize(schema) }
     it { should be_kind_of Module }
-    it { should be_include ::Virtus }
     it { should be_include JSON::Schematized::Models }
     it { should be_include described_class::Models }
-    its(:name){ should =~ /\AJSON::Schematized::VirtusWrapper::JSD/ }
+    its(:name){ should =~ /\A#{described_class}::JSD/ }
     its(:json_schema){ should == schema }
   end
 
   context "model classes" do
-    subject { ::VPerson }
-    it { should be_include ::Virtus }
+    subject { model_class }
     it { should be_include JSON::Schematized::Models }
     it { should be_include described_class::Models }
     it { should be_include described_class.modularize(schema) }
     its(:json_schema){ should == schema }
 
     context "attribute set names" do
-      subject { ::VPerson.attribute_set.map(&:name).sort }
+      subject { model_class.attribute_set.map(&:name).sort }
       it { should == [:address, :children, :email, :phones] }
     end
 
@@ -45,11 +45,11 @@ describe ::JSON::Schematized::VirtusWrapper do
   end
 
   context "model instances" do
-    subject { ::VPerson.new }
-    its(:address){ should be_kind_of ::VPerson::Address }
-    its(:phones){ should be_kind_of ::VPerson::PhonesCollection }
+    subject { model_class.new }
+    its(:address){ should be_kind_of model_class::Address }
+    its(:phones){ should be_kind_of model_class::PhonesCollection }
     its(:children){ should_not be_instance_of Array }
-    its(:children){ should be_instance_of ::VPerson::ChildrenCollection }
+    its(:children){ should be_instance_of model_class::ChildrenCollection }
     its(:children){ should be_kind_of described_class::Array }
 
     context "with mass assignment" do
@@ -62,38 +62,31 @@ describe ::JSON::Schematized::VirtusWrapper do
           :address => address, :children => [child]
         }
       end
-      subject { ::VPerson.new attrs }
+      subject { model_class.new attrs }
       its(:email){ should == "me@email.com" }
       its(:phones){ should == phones }
-      its(:address){ should be_instance_of ::VPerson::Address }
+      its(:address){ should be_instance_of model_class::Address }
       its(:"address.street_name"){ should == address[:street_name] }
       its(:"address.number"){ should == address[:number] }
       its(:"children.size"){ should be 1 }
-      its(:"children.first"){ should be_instance_of ::VPerson::Child }
+      its(:"children.first"){ should be_instance_of model_class::Child }
       its(:"children.first.name"){ should == child[:name] }
       its(:"children.first.age"){ should == child[:age] }
     end
   end
 
   context "collection classes" do
-    subject { ::VPerson::ChildrenCollection }
+    subject { model_class::ChildrenCollection }
     it { should be_include JSON::Schematized::Collections }
     it { should be_include described_class::Collections }
   end
 
   context "object" do
-    let(:model) { Object.new.extend(virtus_module) }
+    let(:object_model){ Object.new.extend(modularized_schema) }
 
-    it "should have attributes to be defined" do
-      model.should be_kind_of ::Virtus
-      virtus_module.should be_const_defined :ComplexTypes
-      model.should be_kind_of virtus_module::ComplexTypes
-
-      model.should be_respond_to :email
-
-      model.should be_respond_to :address
-      virtus_module::ComplexTypes.should be_const_defined :Address
-      model.address.should be_kind_of virtus_module::ComplexTypes::Address
-    end
+    it { should be_kind_of modularized_schema::ComplexTypes }
+    it { should be_respond_to :email }
+    it { should be_respond_to :address }
+    its(:address){ should be_kind_of modularized_schema::ComplexTypes::Address }
   end
 end
