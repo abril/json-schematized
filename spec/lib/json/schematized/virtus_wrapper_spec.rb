@@ -48,7 +48,7 @@ describe ::JSON::Schematized::VirtusWrapper do
     subject { model_class.new }
     its(:address){ should be_kind_of model_class::Address }
     its(:phones){ should be_kind_of model_class::PhonesCollection }
-    its(:children){ should_not be_instance_of Array }
+    its(:children){ should_not be_instance_of ::Array }
     its(:children){ should be_instance_of model_class::ChildrenCollection }
     its(:children){ should be_kind_of described_class::Array }
 
@@ -83,10 +83,18 @@ describe ::JSON::Schematized::VirtusWrapper do
 
   context "object" do
     let(:object_model){ Object.new.extend(modularized_schema) }
+    subject { object_model }
+    before { object_model.children = [{}] }
 
     it { should be_kind_of modularized_schema::ComplexTypes }
     it { should be_respond_to :email }
     it { should be_respond_to :address }
     its(:address){ should be_kind_of modularized_schema::ComplexTypes::Address }
+    its(:phones){ should be_kind_of modularized_schema::ComplexTypes::PhonesCollection }
+    its(:children){ should_not be_instance_of ::Array }
+    its(:children){ should be_instance_of modularized_schema::ComplexTypes::ChildrenCollection }
+    its(:children){ should be_kind_of described_class::Array }
+    its(:"children.size"){ should be 1 }
+    its(:"children.first"){ should be_instance_of modularized_schema::ComplexTypes::Child }
   end
 end
