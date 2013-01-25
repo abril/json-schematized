@@ -19,7 +19,7 @@ module JSON
             m.instance_variable_set(:@json_schema, json_schema)
             def m.json_schema; @json_schema; end
             m.send(:include, self::Models)
-            m.module_eval(&block)
+            m.module_eval(&block) if block_given?
           end
         end
       end
