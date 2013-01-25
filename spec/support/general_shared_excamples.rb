@@ -1,6 +1,12 @@
 # encoding: UTF-8
 
 shared_examples "a JSON::Schematized::Wrapper" do
+  let(:schema_fixture_file){ File.expand_path("../../fixtures/person.yml", __FILE__) }
+  let(:schema_str){ MultiJson.dump(YAML.load(File.read(schema_fixture_file))["person"]) }
+
+  let(:schema){ MultiJson.load(schema_str, :symbolize_keys => true) }
+  let(:modularized_schema){ described_class.modularize(schema) }
+
   context "wrapper module" do
     subject { described_class.modularize(schema) }
     it { should be_kind_of Module }
