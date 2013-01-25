@@ -19,7 +19,7 @@ module JSON
           @json_schema = {:loader => block}
           wrapper = "#{opts.fetch(:wrapper, :none)}_wrapper".gsub(/(?:\A_*|_)([^_])/){ $1.upcase }.to_sym
           wrapper =  Schematized.const_defined?(wrapper) ? Schematized.const_get(wrapper) : nil
-          send(:include, wrapper.modularize(@json_schema[:loader].call)) if wrapper
+          send(:include, wrapper) if wrapper
           self
         end
       end

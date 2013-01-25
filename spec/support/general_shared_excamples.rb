@@ -18,6 +18,7 @@ shared_examples "a JSON::Schematized::Wrapper" do
 
   context "model classes" do
     subject { model_class }
+    it { should be_include described_class }
     it { should be_include JSON::Schematized::Models }
     it { should be_include described_class::Models }
     it { should be_include described_class.modularize(schema) }

@@ -12,6 +12,11 @@ module JSON
 
     module VirtusWrapper
       extend Wrapper
+
+      def self.included(base)
+        base.send(:include, modularize(base.json_schema))
+      end
+
       def self.modularize(json_schema)
         super(json_schema) do
           include ::Virtus
