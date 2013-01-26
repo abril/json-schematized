@@ -28,7 +28,7 @@ module JSON
         modes = {
           :complex_types => 1,
           :simple_types => 2,
-          :any_types => 3
+          :all_types => 3
         }
         mode = [modes[mode].to_i, 0].max
         accept_complex_types = (modes[:complex_types] & mode) > 0
