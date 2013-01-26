@@ -104,9 +104,13 @@ module JSON
           ref.const_set(class_name, Class.new(*[model_superclass].compact))
         ).tap do |klass|
           unless klass.include?(Schematized::Models)
-            klass.send(:include, modularize(json_schema))
+            klass.send(:include, self::Models)
+            prepare_model(klass, json_schema)
           end
         end
+      end
+
+      def prepare_model(model_class, json_schema)
       end
     end
   end

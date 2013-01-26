@@ -21,7 +21,6 @@ shared_examples "a JSON::Schematized::Wrapper" do
     it { should be_include described_class }
     it { should be_include JSON::Schematized::Models }
     it { should be_include described_class::Models }
-    it { should be_include described_class.modularize(schema) }
     its(:json_schema){ should == schema }
 
     context "attribute set names" do

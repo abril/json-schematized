@@ -43,6 +43,10 @@ module JSON
         end
       end
 
+      def self.prepare_model(model_class, json_schema)
+        model_class.send(:include, modularize(json_schema))
+      end
+
       def self.add_attribute!(ref, field_name, meta, kind)
         opts = {}
         klass =  (kind.is_a?(Class) ? kind : kind.class)
