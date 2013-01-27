@@ -5,7 +5,7 @@ module JSON
     module Wrapper
       def self.extended(base)
         base.const_set(:Models, Module.new).send(:include, Schematized::Models)
-        base.const_set(:Collections, Module.new)
+        base.const_set(:Collections, Module.new).send(:include, Schematized::Collections)
       end
 
       def modularize(json_schema, &block)
@@ -88,7 +88,6 @@ module JSON
           ref.const_set(class_name, Class.new(collection_superclass))
         ).tap do |klass|
           unless klass.include?(Schematized::Collections)
-            klass.send(:include, Schematized::Collections)
             klass.send(:include, self::Collections)
           end
         end[meta_type(ref, field_name, meta, true)]
