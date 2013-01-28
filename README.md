@@ -30,7 +30,7 @@ person:
             type: string
 ```
 
-Usage:
+### Basic Wrapper Usage:
 
 ```ruby
 require "json-schematized"
@@ -41,8 +41,29 @@ class Person < JSON::Schematized::Base
   end
 end
 
-person = Person.new name: "John", birth: {name: "John Smith"}
-person.children        # => []
-person.name            # => "John"
-person.birth.name      # => "John Smith"
+person = Person.new name: "John", children: [{name: "William"}]
+person.name                     # => "John"
+person.children                 # => [{"name" => "William"}]
+person.children.class           # => Person::ChildrenCollection
+person.children.first.class     # => Person::Child
+person.children.first.name      # => "William"
+```
+
+### Virtus Wrapper Usage:
+
+```ruby
+require "json-schematized"
+
+class Person
+  include JSON::Schematized
+  json_schema wrapper: :virtus do  # block called only once
+    YAML.load(File.read(File.expand_path("../person.yml", __FILE__)))["person"]
+  end
+end
+
+person.name                     # => "John"
+person.children                 # => [Person::Child:0x007fc990906fd0 @name="William">]
+person.children.class           # => Person::ChildrenCollection
+person.children.first.class     # => Person::Child
+person.children.first.name      # => "William"
 ```
