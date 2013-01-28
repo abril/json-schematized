@@ -17,7 +17,7 @@ module JSON
           raise ArgumentError, "JSON or block expected" if block_given? ^ json.nil?
           block = Proc.new{ json } unless block_given?
           @json_schema_loader = block
-          wrapper = "#{opts.fetch(:wrapper, :none)}_wrapper".gsub(/(?:\A_*|_)([^_])/){ $1.upcase }.to_sym
+          wrapper = "#{opts.fetch(:wrapper, :basic)}_wrapper".gsub(/(?:\A_*|_)([^_])/){ $1.upcase }.to_sym
           wrapper =  Schematized.const_defined?(wrapper) ? Schematized.const_get(wrapper) : nil
           send(:include, wrapper) if wrapper
           self

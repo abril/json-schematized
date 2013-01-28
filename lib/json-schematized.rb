@@ -7,7 +7,6 @@ require "active_support"
 module JSON
   module Schematized
     autoload :Base, "json/schematized/base"
-    autoload :Builder, "json/schematized/builder"
     autoload :DSL, "json/schematized/dsl"
     autoload :Wrapper, "json/schematized/wrapper"
     autoload :BasicWrapper, "json/schematized/basic_wrapper"
@@ -21,5 +20,3 @@ module JSON
     module Collections; end
   end
 end
-
-require "json/schematized_objects"
