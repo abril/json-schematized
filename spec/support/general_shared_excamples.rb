@@ -121,8 +121,8 @@ shared_examples "a JSON::Schematized::Wrapper" do
     it { should be_respond_to :address }
     it { should be_respond_to :children }
     it { should be_respond_to :phones }
-    its(:address){ should be_instance_of modularized_schema::ComplexTypes::Address }
-    its(:phones){ should be_instance_of modularized_schema::ComplexTypes::PhonesCollection }
+    its(:address){ subject.should be_instance_of modularized_schema::ComplexTypes::Address }         # adapted to ruby-1.8.x
+    its(:phones){ subject.should be_instance_of modularized_schema::ComplexTypes::PhonesCollection } # adapted to ruby-1.8.x
     its(:children){ should_not be_instance_of ::Array }
     its(:children){ should be_instance_of modularized_schema::ComplexTypes::ChildrenCollection }
     its(:children){ should be_kind_of ::Array }
