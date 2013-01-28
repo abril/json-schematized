@@ -36,6 +36,12 @@ shared_examples "a JSON::Schematized::Wrapper" do
       it { should be_const_defined :ChildrenCollection }
       it { should be_const_defined :Child }
       it { should be_const_defined :PhonesCollection }
+      it { should_not be_const_defined :BornLocation }
+    end
+
+    context "submodel Child types" do
+      subject { model_class::Child }
+      it { should be_const_defined :BornLocation }
     end
 
     context "submodel Address attribute set names" do
@@ -48,6 +54,14 @@ shared_examples "a JSON::Schematized::Wrapper" do
       subject { model_class::Child.attribute_set.map(&:name) }
       it { should be_include :name }
       it { should be_include :age }
+      it { should be_include :born_location }
+    end
+
+    context "submodel Child::BornLocation attribute set names" do
+      subject { model_class::Child::BornLocation.attribute_set.map(&:name) }
+      it { should be_include :country }
+      it { should be_include :state }
+      it { should be_include :city }
     end
   end
 
@@ -62,7 +76,8 @@ shared_examples "a JSON::Schematized::Wrapper" do
     context "with mass assignment" do
       let(:phones){ ["555-1234"] }
       let(:address){ {:street_name => "Wall Street", :number => 1000} }
-      let(:child){ {:name => "John", :age => 10} }
+      let(:born_location){ {} }
+      let(:child){ {:name => "John", :age => 10, :born_location => born_location} }
       let :attrs do
         {
           :email => "me@email.com", :phones => phones,
@@ -72,6 +87,8 @@ shared_examples "a JSON::Schematized::Wrapper" do
       subject { model_class.new attrs }
       its(:email){ should == "me@email.com" }
       its(:phones){ should == phones }
+      its(:"phones.size"){ should be 1 }
+      its(:"phones.first"){ should == "555-1234" }
       its(:address){ should be_instance_of model_class::Address }
       its(:"address.street_name"){ should == address[:street_name] }
       its(:"address.number"){ should == address[:number] }
@@ -79,6 +96,7 @@ shared_examples "a JSON::Schematized::Wrapper" do
       its(:"children.first"){ should be_instance_of model_class::Child }
       its(:"children.first.name"){ should == child[:name] }
       its(:"children.first.age"){ should == child[:age] }
+      its(:"children.first.born_location"){ should be_instance_of model_class::Child::BornLocation }
     end
   end
 
@@ -91,18 +109,35 @@ shared_examples "a JSON::Schematized::Wrapper" do
   context "object" do
     let(:object_model){ Hash.new.extend(modularized_schema) }
     subject { object_model }
-    before { object_model.children = [{}] }
+    before { object_model.children = [{:born_location => {}}] }
 
     its(:class){ should_not be_const_defined :Address }
+    its(:class){ should_not be_const_defined :ChildrenCollection }
+    its(:class){ should_not be_const_defined :Child }
+    its(:class){ should_not be_const_defined :PhonesCollection }
+    its(:class){ should_not be_const_defined :BornLocation }
     it { should be_kind_of modularized_schema::ComplexTypes }
     it { should be_respond_to :email }
     it { should be_respond_to :address }
-    its(:address){ should be_kind_of modularized_schema::ComplexTypes::Address }
-    its(:phones){ should be_kind_of modularized_schema::ComplexTypes::PhonesCollection }
+    it { should be_respond_to :children }
+    it { should be_respond_to :phones }
+    its(:address){ should be_instance_of modularized_schema::ComplexTypes::Address }
+    its(:phones){ should be_instance_of modularized_schema::ComplexTypes::PhonesCollection }
     its(:children){ should_not be_instance_of ::Array }
     its(:children){ should be_instance_of modularized_schema::ComplexTypes::ChildrenCollection }
     its(:children){ should be_kind_of ::Array }
     its(:"children.size"){ should be 1 }
     its(:"children.first"){ should be_instance_of modularized_schema::ComplexTypes::Child }
+    its(:"children.first.born_location"){ should be_instance_of modularized_schema::ComplexTypes::Child::BornLocation }
+
+    context "ComplexTypes" do
+      subject { modularized_schema::ComplexTypes }
+      it { should be_include modularized_schema }
+      it { should be_const_defined :Address }
+      it { should be_const_defined :ChildrenCollection }
+      it { should be_const_defined :Child }
+      it { should be_const_defined :PhonesCollection }
+      it { should_not be_const_defined :BornLocation }
+    end
   end
 end

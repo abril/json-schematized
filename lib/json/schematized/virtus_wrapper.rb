@@ -33,10 +33,7 @@ module JSON
               const_get(class_name) :
               const_set(class_name, Module.new)
             ).tap do |klass|
-              unless klass.include?(::Virtus)
-                klass.send(:include, ::Virtus)
-                VirtusWrapper.prepare_schema!(klass, json_schema, :complex_types)
-              end
+              klass.send(:include, self) unless klass.include?(self)
               base.extend klass
             end
           end

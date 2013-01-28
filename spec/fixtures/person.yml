@@ -25,3 +25,12 @@ person:
             type: string
           age:
             type: number
+          born_location:
+            type: object
+            properties:
+              country:
+                type: string
+              state:
+                type: string
+              city:
+                type: string

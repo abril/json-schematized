@@ -6,7 +6,8 @@ class SimplePerson < JSON::Schematized::Base
   end
 end
 
-describe JSON::Schematized::BasicWrapper do
+describe JSON::Schematized::Base do
+  let(:described_class){ JSON::Schematized::BasicWrapper }
   it_should_behave_like "a JSON::Schematized::Wrapper" do
     let(:model_class){ SimplePerson }
   end

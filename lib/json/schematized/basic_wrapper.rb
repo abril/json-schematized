@@ -74,6 +74,7 @@ module JSON
           meta = meta[:items] if meta[:type] == "array"
           meta
         end
+        prepare_schema!(model_class, json_schema, :complex_types)
       end
 
       def self.model_superclass
