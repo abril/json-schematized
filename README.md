@@ -62,7 +62,7 @@ class Person
 end
 
 person.name                     # => "John"
-person.children                 # => [Person::Child:0x007fc990906fd0 @name="William">]
+person.children                 # => [#<Person::Child:0x007fc990906fd0 @name="William">]
 person.children.class           # => Person::ChildrenCollection
 person.children.first.class     # => Person::Child
 person.children.first.name      # => "William"
