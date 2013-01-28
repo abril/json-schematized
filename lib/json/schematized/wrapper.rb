@@ -67,8 +67,7 @@ module JSON
         when "array"
           build_collection(ref, field_name, meta[:items])
         when "object"
-          field_name = ::ActiveSupport::Inflector.singularize(field_name.to_s).to_sym if singularize
-          build_model(ref, field_name, meta)
+          build_model(ref, field_name, meta, singularize)
         else
           parse_json_schema_type meta[:type]
         end
@@ -101,20 +100,22 @@ module JSON
       def model_superclass
       end
 
-      def build_model(ref, field_name, json_schema)
-        class_name = build_class_name(field_name).to_sym
+      def build_model(ref, field_name, json_schema, singularize = false)
+        name = field_name
+        name = ::ActiveSupport::Inflector.singularize(field_name.to_s).to_sym if singularize
+        class_name = build_class_name(name).to_sym
         (ref.const_defined?(class_name) ?
           ref.const_get(class_name) :
           ref.const_set(class_name, Class.new(*[model_superclass].compact))
         ).tap do |klass|
           unless klass.include?(Schematized::Models)
             klass.send(:include, self::Models)
-            prepare_model(klass, json_schema)
+            prepare_model(ref, field_name, klass, json_schema)
           end
         end
       end
 
-      def prepare_model(model_class, json_schema)
+      def prepare_model(ref, field_name, model_class, json_schema)
       end
     end
   end

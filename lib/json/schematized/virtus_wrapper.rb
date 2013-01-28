@@ -43,7 +43,7 @@ module JSON
         end
       end
 
-      def self.prepare_model(model_class, json_schema)
+      def self.prepare_model(ref, field_name, model_class, json_schema)
         model_class.send(:include, modularize(json_schema))
       end
 
