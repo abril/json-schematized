@@ -1,6 +1,8 @@
 # JSON::Schematized
 
-Template builder based on JSON-Schema.
+[![Build Status](https://secure.travis-ci.org/abril/json-schematized.png)](http://travis-ci.org/)
+
+Object builder based on JSON-Schema.
 
 ## Sample usage
 
