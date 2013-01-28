@@ -61,6 +61,7 @@ class Person
   end
 end
 
+person = Person.new name: "John", children: [{name: "William"}]
 person.name                     # => "John"
 person.children                 # => [#<Person::Child:0x007fc990906fd0 @name="William">]
 person.children.class           # => Person::ChildrenCollection
