@@ -1,0 +1,4 @@
+Support to use Virtus GEM
+  Automatic creation of model subclasses
+  Automatic creation of collection subclasses
+  Automatic coercion of types
