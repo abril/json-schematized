@@ -24,8 +24,11 @@ shared_examples "a JSON::Schematized::Wrapper" do
     its(:json_schema){ should == schema }
 
     context "attribute set names" do
-      subject { model_class.attribute_set.map(&:name).sort }
-      it { should == [:address, :children, :email, :phones] }
+      subject { model_class.attribute_set.map(&:name) }
+      it { should be_include :address }
+      it { should be_include :children }
+      it { should be_include :email }
+      it { should be_include :phones }
     end
 
     context "submodel types" do
@@ -33,6 +36,18 @@ shared_examples "a JSON::Schematized::Wrapper" do
       it { should be_const_defined :ChildrenCollection }
       it { should be_const_defined :Child }
       it { should be_const_defined :PhonesCollection }
+    end
+
+    context "submodel Address attribute set names" do
+      subject { model_class::Address.attribute_set.map(&:name) }
+      it { should be_include :street_name }
+      it { should be_include :number }
+    end
+
+    context "submodel Child attribute set names" do
+      subject { model_class::Child.attribute_set.map(&:name) }
+      it { should be_include :name }
+      it { should be_include :age }
     end
   end
 
@@ -42,7 +57,7 @@ shared_examples "a JSON::Schematized::Wrapper" do
     its(:phones){ should be_kind_of model_class::PhonesCollection }
     its(:children){ should_not be_instance_of ::Array }
     its(:children){ should be_instance_of model_class::ChildrenCollection }
-    its(:children){ should be_kind_of described_class::Array }
+    its(:children){ should be_kind_of ::Array }
 
     context "with mass assignment" do
       let(:phones){ ["555-1234"] }
@@ -74,10 +89,11 @@ shared_examples "a JSON::Schematized::Wrapper" do
   end
 
   context "object" do
-    let(:object_model){ Object.new.extend(modularized_schema) }
+    let(:object_model){ Hash.new.extend(modularized_schema) }
     subject { object_model }
     before { object_model.children = [{}] }
 
+    its(:class){ should_not be_const_defined :Address }
     it { should be_kind_of modularized_schema::ComplexTypes }
     it { should be_respond_to :email }
     it { should be_respond_to :address }
@@ -85,7 +101,7 @@ shared_examples "a JSON::Schematized::Wrapper" do
     its(:phones){ should be_kind_of modularized_schema::ComplexTypes::PhonesCollection }
     its(:children){ should_not be_instance_of ::Array }
     its(:children){ should be_instance_of modularized_schema::ComplexTypes::ChildrenCollection }
-    its(:children){ should be_kind_of described_class::Array }
+    its(:children){ should be_kind_of ::Array }
     its(:"children.size"){ should be 1 }
     its(:"children.first"){ should be_instance_of modularized_schema::ComplexTypes::Child }
   end
