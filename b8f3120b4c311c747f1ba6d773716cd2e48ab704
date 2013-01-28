@@ -1,0 +1,3 @@
+Generic JSON-Schema wrapper
+  Automatic creation of model subclasses
+  Automatic creation of collection subclasses
