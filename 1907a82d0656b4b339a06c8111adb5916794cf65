@@ -1,0 +1,2 @@
+Refactoring JSON::Schematized::Base to use generic
+ JSON-Schema wrapper
