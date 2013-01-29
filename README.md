@@ -30,7 +30,7 @@ person:
             type: string
 ```
 
-### Basic Wrapper Usage:
+### Basic Wrapper Usage
 
 ```ruby
 require "json-schematized"
@@ -49,7 +49,18 @@ person.children.first.class     # => Person::Child
 person.children.first.name      # => "William"
 ```
 
-### Virtus Wrapper Usage:
+Another way to use Basic Wrapper is as follows:
+
+```ruby
+class Person < Hash
+  include JSON::Schematized
+  json_schema wrapper: :basic do  # block called for each new instance
+    YAML.load(File.read(File.expand_path("../person.yml", __FILE__)))["person"]
+  end
+end
+```
+
+### Virtus Wrapper Usage
 
 ```ruby
 require "json-schematized"
@@ -67,4 +78,15 @@ person.children                 # => [#<Person::Child:0x007fc990906fd0 @name="Wi
 person.children.class           # => Person::ChildrenCollection
 person.children.first.class     # => Person::Child
 person.children.first.name      # => "William"
+```
+
+### Object with Basic Wrapper usage
+
+```ruby
+person = Hash.new
+json_schema = YAML.load(File.read(File.expand_path("../person.yml", __FILE__)))["person"]
+person.extend JSON::Schematized::BasicWrapper.modularize(json_schema)
+
+person.children << {}
+# ...
 ```
