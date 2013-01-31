@@ -16,7 +16,7 @@ module JSON
           const_get(module_name)
         else
           const_set(module_name, Module.new).tap do |m|
-            m.instance_variable_set(:@json_schema, json_schema)
+            m.instance_variable_set(:@json_schema, json_schema.freeze)
             def m.json_schema; @json_schema; end
             m.send(:include, self::Models)
             m.module_eval do
