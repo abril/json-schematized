@@ -15,6 +15,13 @@ module JSON
 
       def self.included(base)
         base.send(:include, modularize(base.json_schema))
+        base.extend ClassMethods
+      end
+
+      module ClassMethods
+        def json_schema_module
+          VirtusWrapper.modularize(json_schema)
+        end
       end
 
       def self.modularize(json_schema)

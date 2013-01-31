@@ -16,7 +16,11 @@ module JSON
 
       module ClassMethods
         def attribute_set
-          BasicWrapper.modularize(json_schema).attribute_set
+          json_schema_module.attribute_set
+        end
+
+        def json_schema_module
+          BasicWrapper.modularize(json_schema)
         end
       end
 
