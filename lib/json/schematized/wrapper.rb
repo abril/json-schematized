@@ -68,6 +68,12 @@ module JSON
           build_collection(ref, field_name, meta[:items])
         when "object"
           build_model(ref, field_name, meta, singularize)
+        when "boolean"
+          TrueClass
+        when "integer"
+          Integer
+        when "number"
+          Numeric
         else
           parse_json_schema_type meta[:type]
         end
