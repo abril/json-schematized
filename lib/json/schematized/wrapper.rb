@@ -62,8 +62,6 @@ module JSON
 
       def meta_type(ref, field_name, meta, singularize = false)
         case meta[:type]
-        when "string"
-          String
         when "array"
           build_collection(ref, field_name, meta[:items])
         when "object"
@@ -72,15 +70,17 @@ module JSON
           TrueClass
         when "integer"
           Integer
-        when "number"
-          Numeric
         else
-          parse_json_schema_type meta[:type]
+          parse_json_schema_type ref, field_name, meta[:type]
         end
       end
 
-      def parse_json_schema_type(type)
-        Object
+      def parse_json_schema_type(ref, field_name, type)
+        case type
+        when "string" then String
+        when "number" then Numeric
+        else Object
+        end
       end
 
       def build_class_name(field_name)
