@@ -22,7 +22,7 @@ module JSON
 
       def initialize(attrs = nil)
         self.json_schema = self.class.json_schema
-        mass_assign!(attrs)
+        self.attributes = attrs
       end
 
       def self.modularize(json_schema)
@@ -109,7 +109,7 @@ module JSON
           if members_module.json_schema[:type] == "object"
             new_value = members_type.new
             new_value.extend members_module
-            new_value.mass_assign!(value) if value.is_a?(Hash)
+            new_value.attributes = value if value.is_a?(Hash)
             super(new_value)
           else
             super
@@ -159,14 +159,14 @@ module JSON
               model_class = BasicWrapper.build_model(subclasses_namespace, key, meta)
               new_value = model_class.new
               new_value.json_schema = meta
-              new_value.mass_assign!(value) if value.is_a?(Hash)
+              new_value.attributes = value if value.is_a?(Hash)
               value = new_value
             end
           end
           super(key.to_s, value)
         end
 
-        def mass_assign!(hash)
+        def attributes=(hash)
           return unless hash.is_a?(Hash)
           hash.each_pair do |key, value|
             self[key] = value
