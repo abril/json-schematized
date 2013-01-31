@@ -24,7 +24,7 @@ person:
           name:
             type: string
           age:
-            type: number
+            type: integer
           born_location:
             type: object
             properties:

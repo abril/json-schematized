@@ -77,7 +77,7 @@ shared_examples "a JSON::Schematized::Wrapper" do
       let(:phones){ ["555-1234"] }
       let(:address){ {:street_name => "Wall Street", :number => 1000} }
       let(:born_location){ {} }
-      let(:child){ {:name => "John", :age => 10, :born_location => born_location} }
+      let(:child){ {:name => "John", :age => "10", :born_location => born_location} }
       let :attrs do
         {
           :email => "me@email.com", :phones => phones,
@@ -95,7 +95,7 @@ shared_examples "a JSON::Schematized::Wrapper" do
       its(:"children.size"){ should be 1 }
       its(:"children.first"){ should be_instance_of model_class::Child }
       its(:"children.first.name"){ should == child[:name] }
-      its(:"children.first.age"){ should == child[:age] }
+      its(:"children.first.age"){ should == child[:age].to_i }
       its(:"children.first.born_location"){ should be_instance_of model_class::Child::BornLocation }
     end
   end
@@ -109,7 +109,7 @@ shared_examples "a JSON::Schematized::Wrapper" do
   context "object" do
     let(:object_model){ Hash.new.extend(modularized_schema) }
     subject { object_model }
-    before { object_model.children = [{:born_location => {}}] }
+    before { object_model.children = [{:age => "10", :born_location => {}}] }
 
     its(:class){ should_not be_const_defined :Address }
     its(:class){ should_not be_const_defined :ChildrenCollection }
@@ -128,6 +128,7 @@ shared_examples "a JSON::Schematized::Wrapper" do
     its(:children){ should be_kind_of ::Array }
     its(:"children.size"){ should be 1 }
     its(:"children.first"){ should be_instance_of modularized_schema::ComplexTypes::Child }
+    its(:"children.first.age"){ should be 10 }
     its(:"children.first.born_location"){ should be_instance_of modularized_schema::ComplexTypes::Child::BornLocation }
 
     context "ComplexTypes" do

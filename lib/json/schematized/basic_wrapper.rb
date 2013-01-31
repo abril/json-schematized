@@ -161,6 +161,8 @@ module JSON
               new_value.json_schema = meta
               new_value.attributes = value if value.is_a?(Hash)
               value = new_value
+            else
+              value = subclasses_namespace.attribute_set[key.to_sym].coerce(value)
             end
           end
           super(key.to_s, value)
