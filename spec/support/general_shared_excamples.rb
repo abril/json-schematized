@@ -6,6 +6,7 @@ shared_examples "a JSON::Schematized::Wrapper" do
 
   let(:schema){ MultiJson.load(schema_str, :symbolize_keys => true) }
   let(:modularized_schema){ described_class.modularize(schema) }
+  let(:object_model_module){ modularized_schema }
 
   context "wrapper module" do
     subject { described_class.modularize(schema) }
@@ -122,26 +123,25 @@ shared_examples "a JSON::Schematized::Wrapper" do
     its(:class){ should_not be_const_defined :Child }
     its(:class){ should_not be_const_defined :PhonesCollection }
     its(:class){ should_not be_const_defined :BornLocation }
-    it { should be_kind_of modularized_schema::ComplexTypes }
+    it { should be_kind_of object_model_module }
     it { should be_respond_to :age }
     it { should be_respond_to :email }
     it { should be_respond_to :address }
     it { should be_respond_to :children }
     it { should be_respond_to :phones }
     its(:age){ should be 45 }
-    its(:address){ subject.should be_instance_of modularized_schema::ComplexTypes::Address }         # adapted to ruby-1.8.x
-    its(:phones){ subject.should be_instance_of modularized_schema::ComplexTypes::PhonesCollection } # adapted to ruby-1.8.x
+    its(:address){ subject.should be_instance_of object_model_module::Address }         # adapted to ruby-1.8.x
+    its(:phones){ subject.should be_instance_of object_model_module::PhonesCollection } # adapted to ruby-1.8.x
     its(:children){ should_not be_instance_of ::Array }
-    its(:children){ should be_instance_of modularized_schema::ComplexTypes::ChildrenCollection }
+    its(:children){ should be_instance_of object_model_module::ChildrenCollection }
     its(:children){ should be_kind_of ::Array }
     its(:"children.size"){ should be 1 }
-    its(:"children.first"){ should be_instance_of modularized_schema::ComplexTypes::Child }
+    its(:"children.first"){ should be_instance_of object_model_module::Child }
     its(:"children.first.age"){ should be 10 }
-    its(:"children.first.born_location"){ should be_instance_of modularized_schema::ComplexTypes::Child::BornLocation }
+    its(:"children.first.born_location"){ should be_instance_of object_model_module::Child::BornLocation }
 
-    context "ComplexTypes" do
-      subject { modularized_schema::ComplexTypes }
-      it { should be_include modularized_schema }
+    context "model classes" do
+      subject { object_model_module }
       it { should be_const_defined :Address }
       it { should be_const_defined :ChildrenCollection }
       it { should be_const_defined :Child }

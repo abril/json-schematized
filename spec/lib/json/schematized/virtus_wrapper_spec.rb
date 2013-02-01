@@ -10,6 +10,7 @@ end
 describe ::JSON::Schematized::VirtusWrapper do
   it_should_behave_like "a JSON::Schematized::Wrapper" do
     let(:model_class){ ::VPerson }
+    let(:object_model_module) { modularized_schema::ComplexTypes }
 
     context "model classes" do
       subject { model_class }

@@ -48,25 +48,17 @@ module JSON
             super
             return if base.class.include? BasicWrapper::Models
             class_name = :ComplexTypes
-            (const_defined?(class_name) ?
-              const_get(class_name) :
-              const_set(class_name, Module.new)
-            ).tap do |klass|
-              unless klass.include?(self)
-                klass.send(:include, self)
-                klass.instance_variable_set(:@attribute_set, self.attribute_set)
-                klass.module_eval do
-                  def self.attribute_set
-                    @attribute_set
-                  end
-                  define_method :subclasses_namespace do
-                    klass
-                  end
-                end
+            if const_defined?(class_name)
+              klass = const_get(class_name)
+            else
+              klass = const_set(class_name, Module.new)
+              _mod = self
+              klass.module_eval do
+                define_method(:submodels_scope){ _mod }
               end
-              base.extend klass
-              BasicWrapper::SchematizedHash.ensure_structure!(base, base.json_schema)
             end
+            base.extend klass
+            BasicWrapper::SchematizedHash.ensure_structure!(base, base.json_schema)
           end
         end
       end
@@ -151,7 +143,7 @@ module JSON
           json_schema[:properties].has_key?(method_name.to_sym) || super
         end
 
-        def subclasses_namespace
+        def submodels_scope
           self.class
         end
 
@@ -159,19 +151,19 @@ module JSON
           if meta = json_schema[:properties][key.to_sym]
             case meta[:type]
             when "array"
-              collection = BasicWrapper.build_collection(subclasses_namespace, key, meta[:items])
+              collection = BasicWrapper.build_collection(submodels_scope, key, meta[:items])
               new_value = collection.class.new
               new_value.coerce_members_to(collection.first, meta[:items])
               new_value.mass_assign!(value) if value.is_a?(Array)
               value = new_value
             when "object"
-              model_class = BasicWrapper.build_model(subclasses_namespace, key, meta)
+              model_class = BasicWrapper.build_model(submodels_scope, key, meta)
               new_value = model_class.new
               new_value.json_schema = meta
               new_value.attributes = value if value.is_a?(Hash)
               value = new_value
             else
-              value = subclasses_namespace.attribute_set[key.to_sym].coerce(value)
+              value = submodels_scope.attribute_set[key.to_sym].coerce(value)
             end
           end
           super(key.to_s, value)
