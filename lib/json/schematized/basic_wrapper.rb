@@ -33,8 +33,6 @@ module JSON
         super(json_schema) do
           include BasicWrapper::SchematizedHash
 
-          def json_schema=(*args); end
-
           def self.attribute_set
             unless defined?(@attribute_set)
               set = []
@@ -90,10 +88,6 @@ module JSON
       end
 
       module Models
-        def attributes
-          self
-        end
-
         def json_schema=(json_schema)
           extend BasicWrapper.modularize(json_schema)
         end
@@ -145,6 +139,12 @@ module JSON
             read_attribute key
           end
         end
+
+        def attributes
+          self
+        end
+
+        def json_schema=(*args); end
 
         def respond_to?(method_name)
           json_schema[:properties].has_key?(method_name.to_sym) || super
