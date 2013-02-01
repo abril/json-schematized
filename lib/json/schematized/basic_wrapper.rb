@@ -65,6 +65,7 @@ module JSON
                 end
               end
               base.extend klass
+              BasicWrapper::SchematizedHash.ensure_structure!(base, base.json_schema)
             end
           end
         end
