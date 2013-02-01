@@ -56,7 +56,11 @@ module JSON
             ).tap do |klass|
               unless klass.include?(self)
                 klass.send(:include, self)
+                klass.instance_variable_set(:@attribute_set, self.attribute_set)
                 klass.module_eval do
+                  def self.attribute_set
+                    @attribute_set
+                  end
                   define_method :subclasses_namespace do
                     klass
                   end

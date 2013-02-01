@@ -3,6 +3,8 @@ person:
   properties:
     email:
       type: string
+    age:
+      type: integer
     phones:
       type: array
       required: true

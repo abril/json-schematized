@@ -82,12 +82,14 @@ shared_examples "a JSON::Schematized::Wrapper" do
       let :attrs do
         {
           :email => "me@email.com", :phones => phones,
+          :age => "45",
           :address => address, :children => [child]
         }
       end
       subject { model_class.new attrs }
       its(:email){ should == "me@email.com" }
       its(:phones){ should == phones }
+      its(:age){ should be 45 }
       its(:"phones.size"){ should be 1 }
       its(:"phones.first"){ should == "555-1234" }
       its(:address){ should be_instance_of model_class::Address }
@@ -110,7 +112,10 @@ shared_examples "a JSON::Schematized::Wrapper" do
   context "object" do
     let(:object_model){ Hash.new.extend(modularized_schema) }
     subject { object_model }
-    before { object_model.children = [{:age => "10", :born_location => {}}] }
+    before do
+      object_model.age = "45"
+      object_model.children = [{:age => "10", :born_location => {}}]
+    end
 
     its(:class){ should_not be_const_defined :Address }
     its(:class){ should_not be_const_defined :ChildrenCollection }
@@ -118,10 +123,12 @@ shared_examples "a JSON::Schematized::Wrapper" do
     its(:class){ should_not be_const_defined :PhonesCollection }
     its(:class){ should_not be_const_defined :BornLocation }
     it { should be_kind_of modularized_schema::ComplexTypes }
+    it { should be_respond_to :age }
     it { should be_respond_to :email }
     it { should be_respond_to :address }
     it { should be_respond_to :children }
     it { should be_respond_to :phones }
+    its(:age){ should be 45 }
     its(:address){ subject.should be_instance_of modularized_schema::ComplexTypes::Address }         # adapted to ruby-1.8.x
     its(:phones){ subject.should be_instance_of modularized_schema::ComplexTypes::PhonesCollection } # adapted to ruby-1.8.x
     its(:children){ should_not be_instance_of ::Array }
