@@ -16,13 +16,11 @@ module JSON
           const_get(module_name)
         else
           const_set(module_name, Module.new).tap do |m|
-            m.instance_variable_set(:@json_schema, json_schema.freeze)
-            def m.json_schema; @json_schema; end
             m.send(:include, self::Models)
+            def m.json_schema; @json_schema end
             m.module_eval do
-              define_method :json_schema do
-                m.json_schema
-              end
+              @json_schema = json_schema.freeze
+              define_method(:json_schema){ m.json_schema }
             end
             m.module_eval(&block) if block_given?
           end
