@@ -163,7 +163,9 @@ module JSON
               new_value.attributes = value if value.is_a?(Hash)
               value = new_value
             else
-              value = submodels_scope.attribute_set[key.to_sym].coerce(value)
+              attribute = submodels_scope.attribute_set[key.to_sym]
+              attribute = attribute.writer if attribute.respond_to?(:writer)
+              value = attribute.coerce(value)
             end
           end
           super(key.to_s, value)
