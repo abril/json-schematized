@@ -2,6 +2,8 @@ source :rubygems
 
 gemspec
 
+gem 'virtus', :git => 'https://github.com/solnic/virtus'
+
 # RUBY_VERSION ~> "1.9.0"
 # gem "debugger"
 
