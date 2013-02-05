@@ -11,8 +11,6 @@ module JSON
     autoload :Wrapper, "json/schematized/wrapper"
     autoload :BasicWrapper, "json/schematized/basic_wrapper"
     autoload :VirtusWrapper, "json/schematized/virtus_wrapper"
-    autoload :VERSION, "json/schematized/version"
-    autoload :Version, "json/schematized/version"
 
     def self.included(base)
       base.extend DSL
