@@ -1,5 +1,39 @@
 # encoding: UTF-8
 
+shared_examples "a model with submodel types" do
+  subject { model_scope } # model_scope must be defined inside `it_should_behave_like` block
+  it { should be_const_defined :Address }
+  it { should be_const_defined :ChildrenCollection }
+  it { should be_const_defined :Child }
+  it { should be_const_defined :PhonesCollection }
+  it { should_not be_const_defined :BornLocation }
+
+  context "submodel Child types" do
+    subject { model_scope::Child }
+    it { should be_const_defined :BornLocation }
+  end
+
+  context "submodel Address attribute set names" do
+    subject { model_scope::Address.attribute_set.map(&:name) }
+    it { should be_include :street_name }
+    it { should be_include :number }
+  end
+
+  context "submodel Child attribute set names" do
+    subject { model_scope::Child.attribute_set.map(&:name) }
+    it { should be_include :name }
+    it { should be_include :age }
+    it { should be_include :born_location }
+  end
+
+  context "submodel Child::BornLocation attribute set names" do
+    subject { model_scope::Child::BornLocation.attribute_set.map(&:name) }
+    it { should be_include :country }
+    it { should be_include :state }
+    it { should be_include :city }
+  end
+end
+
 shared_examples "a JSON::Schematized::Wrapper" do
   let(:schema_fixture_file){ File.expand_path("../../fixtures/person.yml", __FILE__) }
   let(:schema_str){ MultiJson.dump(YAML.load(File.read(schema_fixture_file))["person"]) }
@@ -9,7 +43,7 @@ shared_examples "a JSON::Schematized::Wrapper" do
   let(:object_model_module){ modularized_schema }
 
   context "wrapper module" do
-    subject { described_class.modularize(schema) }
+    subject { modularized_schema }
     it { should be_kind_of Module }
     it { should be_include JSON::Schematized::Models }
     it { should be_include described_class::Models }
@@ -17,8 +51,12 @@ shared_examples "a JSON::Schematized::Wrapper" do
     its(:json_schema){ should == schema }
   end
 
+  it_should_behave_like "a model with submodel types" do
+    let(:model_scope){ model_class }
+  end
+
   context "model classes" do
-    subject { model_class }
+    subject { model_class } # model_class must be defined inside `it_should_behave_like` block
     it { should be_include described_class }
     it { should be_include JSON::Schematized::Models }
     it { should be_include described_class::Models }
@@ -32,46 +70,12 @@ shared_examples "a JSON::Schematized::Wrapper" do
       it { should be_include :email }
       it { should be_include :phones }
     end
-
-    context "submodel types" do
-      it { should be_const_defined :Address }
-      it { should be_const_defined :ChildrenCollection }
-      it { should be_const_defined :Child }
-      it { should be_const_defined :PhonesCollection }
-      it { should_not be_const_defined :BornLocation }
-    end
-
-    context "submodel Child types" do
-      subject { model_class::Child }
-      it { should be_const_defined :BornLocation }
-    end
-
-    context "submodel Address attribute set names" do
-      subject { model_class::Address.attribute_set.map(&:name) }
-      it { should be_include :street_name }
-      it { should be_include :number }
-    end
-
-    context "submodel Child attribute set names" do
-      subject { model_class::Child.attribute_set.map(&:name) }
-      it { should be_include :name }
-      it { should be_include :age }
-      it { should be_include :born_location }
-    end
-
-    context "submodel Child::BornLocation attribute set names" do
-      subject { model_class::Child::BornLocation.attribute_set.map(&:name) }
-      it { should be_include :country }
-      it { should be_include :state }
-      it { should be_include :city }
-    end
   end
 
   context "model instances" do
     subject { model_class.new }
-    its(:address){ should be_kind_of model_class::Address }
-    its(:phones){ should be_kind_of model_class::PhonesCollection }
-    its(:children){ should_not be_instance_of ::Array }
+    its(:address){ should be_instance_of model_class::Address }
+    its(:phones){ should be_instance_of model_class::PhonesCollection }
     its(:children){ should be_instance_of model_class::ChildrenCollection }
     its(:children){ should be_kind_of ::Array }
 
@@ -89,13 +93,14 @@ shared_examples "a JSON::Schematized::Wrapper" do
       end
       subject { model_class.new attrs }
       its(:email){ should == "me@email.com" }
-      its(:phones){ should == phones }
       its(:age){ should be 45 }
+      its(:phones){ should be_instance_of model_class::PhonesCollection }
       its(:"phones.size"){ should be 1 }
       its(:"phones.first"){ should == "555-1234" }
       its(:address){ should be_instance_of model_class::Address }
       its(:"address.street_name"){ should == address[:street_name] }
       its(:"address.number"){ should == address[:number] }
+      its(:children){ should be_instance_of model_class::ChildrenCollection }
       its(:"children.size"){ should be 1 }
       its(:"children.first"){ should be_instance_of model_class::Child }
       its(:"children.first.name"){ should == child[:name] }
@@ -110,7 +115,7 @@ shared_examples "a JSON::Schematized::Wrapper" do
     it { should be_include described_class::Collections }
   end
 
-  context "object" do
+  context "extended object" do
     let(:object_model){ Hash.new.extend(modularized_schema) }
     subject { object_model }
     before do
@@ -132,7 +137,6 @@ shared_examples "a JSON::Schematized::Wrapper" do
     its(:age){ should be 45 }
     its(:address){ subject.should be_instance_of object_model_module::Address }         # adapted to ruby-1.8.x
     its(:phones){ subject.should be_instance_of object_model_module::PhonesCollection } # adapted to ruby-1.8.x
-    its(:children){ should_not be_instance_of ::Array }
     its(:children){ should be_instance_of object_model_module::ChildrenCollection }
     its(:children){ should be_kind_of ::Array }
     its(:"children.size"){ should be 1 }
@@ -140,13 +144,8 @@ shared_examples "a JSON::Schematized::Wrapper" do
     its(:"children.first.age"){ should be 10 }
     its(:"children.first.born_location"){ should be_instance_of object_model_module::Child::BornLocation }
 
-    context "model classes" do
-      subject { object_model_module }
-      it { should be_const_defined :Address }
-      it { should be_const_defined :ChildrenCollection }
-      it { should be_const_defined :Child }
-      it { should be_const_defined :PhonesCollection }
-      it { should_not be_const_defined :BornLocation }
+    it_should_behave_like "a model with submodel types" do
+      let(:model_scope){ object_model_module }
     end
   end
 end
