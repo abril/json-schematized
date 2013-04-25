@@ -139,7 +139,7 @@ module JSON
 
         def json_schema=(*args); end
 
-        def respond_to?(method_name)
+        def respond_to?(method_name, *)
           json_schema[:properties].has_key?(method_name.to_sym) || super
         end
 
