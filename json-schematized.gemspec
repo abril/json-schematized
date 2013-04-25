@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name          = "json-schematized"
-  s.version       = "0.2.1"
+  s.version       = "0.2.2"
   s.platform      = Gem::Platform::RUBY
   s.summary       = "Object builder based on JSON-Schema"
   s.require_paths = ["lib"]
