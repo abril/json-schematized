@@ -135,8 +135,6 @@ shared_examples "a JSON::Schematized::Wrapper" do
     it { should be_respond_to :children }
     it { should be_respond_to :phones }
     its(:age){ should be 45 }
-    its(:address){ subject.class.should be object_model_module::Address }         # adapted to ruby-1.8.x
-    its(:phones){ subject.class.should be object_model_module::PhonesCollection } # adapted to ruby-1.8.x
     its(:children){ should be_instance_of object_model_module::ChildrenCollection }
     its(:children){ should be_kind_of ::Array }
     its(:"children.size"){ should be 1 }
