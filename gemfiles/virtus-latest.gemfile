@@ -1,0 +1,6 @@
+source :rubygems
+
+gemspec
+
+# Gem activesupport ~> 4.0.0 requires Ruby ~> 1.9.3
+gem 'activesupport', '~> 3.2.0'
