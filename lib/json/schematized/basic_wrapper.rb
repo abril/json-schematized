@@ -38,7 +38,7 @@ module JSON
               set = []
               v1x = ::Virtus.respond_to?(:module)
               json_schema[:properties].each_pair do |field_name, meta|
-                args = [field_name, BasicWrapper.meta_type(self, field_name, meta), {name: field_name}]
+                args = [field_name, BasicWrapper.meta_type(self, field_name, meta), {:name => field_name}]
                 if v1x
                   args.shift
                 else
