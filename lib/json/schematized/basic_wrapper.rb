@@ -36,8 +36,15 @@ module JSON
           def self.attribute_set
             unless defined?(@attribute_set)
               set = []
+              v1x = ::Virtus.respond_to?(:module)
               json_schema[:properties].each_pair do |field_name, meta|
-                set << Virtus::Attribute.build(field_name, BasicWrapper.meta_type(self, field_name, meta))
+                args = [field_name, BasicWrapper.meta_type(self, field_name, meta), {name: field_name}]
+                if v1x
+                  args.shift
+                else
+                  args.pop
+                end
+                set << Virtus::Attribute.build(*args)
               end
               @attribute_set = Virtus::AttributeSet.new(nil, set)
             end
